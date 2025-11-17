@@ -5,7 +5,7 @@ import { View, Text, Dimensions, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView, WebViewMessageEvent} from 'react-native-webview';
 import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from "expo-file-system/legacy";
 import { useVideoPlayer, VideoView } from 'expo-video'; // <-- Add expo-video imports
 import { useColorScheme } from 'nativewind';
 import colors from '../../constants/colors';
