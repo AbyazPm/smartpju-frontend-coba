@@ -1,0 +1,66 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+.yarn/
+.yarnrc
+.yarnrc.yml
+
+# Expo
+.expo/
+web-build/
+dist/
+*.jks
+*.p12
+*.key
+*.keystore
+*.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.#*
+*.bak
+*.swp
+*.swo
+*.log
+*.db
+*.sqlite
+*.sqlite3
+.DS_Store
+Thumbs.db
+__MACOSX/
+build/
+*.apk
+*.aab
+*.ipa
+android/build/
+ios/build/
+app.config.local.js
+# Metro bundler cache
+.expo-shared/
+
+# VS Code
+.vscode/
+
+# TypeScript build output
+*.js
+*.d.ts
+!babel.config.js # Keep babel config
+!metro.config.js # Keep metro config
+!jest.config.js # Keep jest config
+!tailwind.config.js # Keep tailwind config
+!App.tsx # Keep App.tsx
+!index.ts # Keep index.ts (if used as entry)
+!index.tsx # Keep index.tsx (if used as entry)
+!app/ # Keep app/ directory for Expo Router
+!components/ # Keep components/ directory
+!constants/ # Keep constants/ directory
+!navigation/ # Keep navigation/ directory
+!screens/ # Keep screens/ directory
+!services/ # Keep services/ directory
+!types/ # Keep types/ directory
+!assets/ # Keep assets/ directory
