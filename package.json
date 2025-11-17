@@ -18,8 +18,8 @@
     "expo-status-bar": "~3.0.8",
     "expo-video": "~3.0.14",
     "nativewind": "^4.1.23",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "react-native": "0.81.5",
     "react-native-maps": "1.20.1",
     "react-native-reanimated": "~4.1.1",
@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@types/react": "^19.2.0",
+    "@types/react": "^19.1.4",
     "prettier-plugin-tailwindcss": "^0.5.14",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.9.2"
