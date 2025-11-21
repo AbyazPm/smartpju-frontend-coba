@@ -8,38 +8,56 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+
     "ios": {
       "supportsTablet": true
     },
+
     "android": {
-      "package": "com.TRI.smartpjumonitorapp",   
-      "versionCode": 1,                                
+      "package": "com.TRI.smartpjumonitorapp",
+      "versionCode": 1,
+
+      "permissions": [
+        "INTERNET",
+        "WAKE_LOCK",
+        "VIBRATE"
+      ],
+
+      "hardwareAccelerated": true,
+      "usesCleartextTraffic": true,
+
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+
       "edgeToEdgeEnabled": true
     },
+
     "web": {
       "bundler": "metro",
       "favicon": "./assets/favicon.png"
     },
+
     "plugins": [
       "expo-router",
       "expo-asset",
       "expo-video"
     ],
+
     "extra": {
       "router": {},
       "eas": {
         "projectId": "92608f38-494b-4507-b83a-2515992ac3ab"
       }
     },
+
     "owner": "princeyazz"
   }
 }

@@ -5,7 +5,7 @@ import { View, Text, Dimensions, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView, WebViewMessageEvent} from 'react-native-webview';
 import { Asset } from 'expo-asset';
-import * as FileSystem from "expo-file-system/legacy";
+import * as FileSystem from "expo-file-system";
 import { useVideoPlayer, VideoView } from 'expo-video'; // <-- Add expo-video imports
 import { useColorScheme } from 'nativewind';
 import colors from '../../constants/colors';
@@ -34,16 +34,26 @@ export default function CctvLiveScreen() {
   const currentStreamUrl = selectedPole?.streamUrl || '';
   
   // Load leaflet_map.html
-  useEffect(() => {
-    const loadHtml = async () => {
-      const asset = Asset.fromModule(require('../../assets/html/leaflet_map.html'));
-      await asset.downloadAsync();
-      const content = await FileSystem.readAsStringAsync(asset.localUri || asset.uri);
-    
-      setHtmlContent(content);
-    };
-    loadHtml();
-  }, []);
+ useEffect(() => {
+  const loadHtml = async () => {
+    const asset = Asset.fromModule(
+      require('../../assets/html/leaflet_map.html')
+    );
+
+    await asset.downloadAsync();
+
+    const fileUri = asset.localUri || asset.uri;
+
+    const content = await FileSystem.readAsStringAsync(fileUri, {
+      encoding: FileSystem.EncodingType.UTF8,
+    });
+
+    setHtmlContent(content);
+  };
+
+  loadHtml();
+}, []);
+
 
   const onWebViewMessage = (event: WebViewMessageEvent) => {
     try {
