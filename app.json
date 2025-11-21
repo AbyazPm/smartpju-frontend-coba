@@ -5,9 +5,11 @@
     "scheme": "smartpju",
     "version": "1.0.0",
     "orientation": "portrait",
+
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+
+    "newArchEnabled": false,
 
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -20,8 +22,8 @@
     },
 
     "android": {
-      "package": "com.TRI.smartpjumonitorapp",
-      "versionCode": 1,
+      "package": "com.tri.smartpjumonitorapp",
+      "versionCode": 2,
 
       "permissions": [
         "INTERNET",
@@ -31,6 +33,7 @@
 
       "hardwareAccelerated": true,
       "usesCleartextTraffic": true,
+      "softwareKeyboardLayoutMode": "pan",
 
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",

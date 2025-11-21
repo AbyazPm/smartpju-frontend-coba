@@ -28,7 +28,7 @@ export default function OnboardingScreen() {
           </Text>
         </View>
 
-        <Link href="/cctv" asChild>
+        <Link href="/tabs/cctv" asChild>
           <TouchableOpacity
             className="w-full py-4 rounded-lg items-center mb-6  z-10"
             style={{ backgroundColor: colors.primary }}

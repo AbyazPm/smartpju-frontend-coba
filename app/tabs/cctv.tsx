@@ -1,12 +1,11 @@
 // CctvLiveScreen.tsx
 
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { WebView, WebViewMessageEvent} from 'react-native-webview';
+import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import { Asset } from 'expo-asset';
-import * as FileSystem from "expo-file-system";
-import { useVideoPlayer, VideoView } from 'expo-video'; // <-- Add expo-video imports
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { useColorScheme } from 'nativewind';
 import colors from '../../constants/colors';
 
@@ -15,162 +14,115 @@ const { width } = Dimensions.get('window');
 interface CctvPole {
   id: string;
   name: string;
-  coords: [number, number]; // [latitude, longitude]
+  coords: [number, number];
   streamUrl: string;
-  // icon?: any; // If you plan to pass icon data back, define its type
 }
+
 export default function CctvLiveScreen() {
-  const { colorScheme } = useColorScheme(); // Ensure this is present
-  const isDarkMode = colorScheme === 'dark'; // Ensure this is present
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === 'dark';
 
   const webviewRef = useRef(null);
 
   const [htmlContent, setHtmlContent] = useState<string | null>(null);
-  const [selectedPole, setSelectedPole] = useState<CctvPole | null>(null); // <-- NEW STATE for selected pole
-  
-  // Video Player States
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [videoUri, setVideoUri] = useState<string | null>(null); // For local video (if needed later)
+  const [selectedPole, setSelectedPole] = useState<CctvPole | null>(null);
+
   const currentStreamUrl = selectedPole?.streamUrl || '';
-  
-  // Load leaflet_map.html
- useEffect(() => {
-  const loadHtml = async () => {
-    const asset = Asset.fromModule(
-      require('../../assets/html/leaflet_map.html')
-    );
 
-    await asset.downloadAsync();
+  /** 🔥 FIX: Load HTML using Asset + fetch (no file-system encoding issues) */
+  useEffect(() => {
+    const loadHtml = async () => {
+      try {
+        const asset = Asset.fromModule(
+          require('../../assets/html/leaflet_map.html')
+        );
 
-    const fileUri = asset.localUri || asset.uri;
+        await asset.downloadAsync();
 
-    const content = await FileSystem.readAsStringAsync(fileUri, {
-      encoding: FileSystem.EncodingType.UTF8,
-    });
+        const response = await fetch(asset.localUri!);
+        const text = await response.text();
+        setHtmlContent(text);
+      } catch (err) {
+        console.error('Failed to load HTML:', err);
+      }
+    };
 
-    setHtmlContent(content);
-  };
+    loadHtml();
+  }, []);
 
-  loadHtml();
-}, []);
-
-
+  /** Receive data from WebView (JSON string) */
   const onWebViewMessage = (event: WebViewMessageEvent) => {
     try {
-      // Parse the incoming JSON string into a pole object
       const poleData: CctvPole = JSON.parse(event.nativeEvent.data);
       console.log('Selected CCTV Pole:', poleData);
-      setSelectedPole(poleData); // Update the selected pole state
-    } catch (error) {
-      console.error('Failed to parse WebView message:', error);
-      console.log('Using Stream URL:', selectedPole?.streamUrl);
+      setSelectedPole(poleData);
+    } catch (e) {
+      console.error('Invalid WebView message:', e);
     }
   };
 
-  // const player = useVideoPlayer(currentStreamUrl, (player) => {
-  //   player.loop = true;
-  //   if (currentStreamUrl) {
-  //     player.play();
-  //   }
-  // });
-   const player = useVideoPlayer(currentStreamUrl, (player) => {
-    player.loop = true;
-    if (currentStreamUrl) {
-      player.play();
-    }
+  /** Create video player */
+  const player = useVideoPlayer(currentStreamUrl, (player) => {
+    player.loop = false;
+    if (currentStreamUrl) player.play();
   });
 
-  
-
-  // Initialize video player
-  // This will now use selectedPole.streamUrl
-  // const player = useVideoPlayer(selectedPole?.streamUrl || '', player => { // Use selectedPole.streamUrl
-  //   player.loop = true;
-  //   player.play();
-  //   setIsPlaying(true);
-  //   player.addListener('ratechange', () => {
-  //     setIsPlaying(player.rate > 0);
-  //   });
-  // });
-  
   return (
     <SafeAreaView className={`flex-1 ${isDarkMode ? 'bg-darkBackground' : 'bg-white'}`}>
-      <View 
-        className=" rounded-lg overflow-hidden" // <-- Added rounded-lg and overflow-hidden
-
-        style={{ height: '30%', width: '100%',}}
-      >
+      
+      {/* MAP VIEW */}
+      <View className="rounded-lg overflow-hidden" style={{ height: '30%', width: '100%' }}>
         {htmlContent ? (
           <WebView
             originWhitelist={['*']}
             source={{ html: htmlContent }}
             ref={webviewRef}
-        //     onMessage={(event) => {
-        //       const streamUrl = event.nativeEvent.data;
-        //       console.log('Selected CCTV Stream URL:', streamUrl);
-
-        //       // Set this streamUrl to your video player to start streaming
-        //       setSelectedStream(streamUrl);
-        //    }}
-        //     style={{ flex: 1 }}
-        //   />
-        // ) : (
-        //   <Text className="text-gray-500">Loading map...</Text>
-        // )}
-        onMessage={onWebViewMessage}
+            onMessage={onWebViewMessage}
             style={{ flex: 1 }}
           />
         ) : (
-          <Text className="text-gray-500">Loading map...</Text>
+          <Text className="text-gray-500">Loading map…</Text>
         )}
       </View>
 
+      {/* VIDEO SECTION */}
       <View className="p-4 flex-1">
         <Text className="text-xl font-bold mb-2">Rekaman Live CCTV</Text>
         <Text className="text-sm mb-4">Pantau rekaman live kamera CCTV secara realtime.</Text>
-        {/* Display selected pole details */}
-        <View className="mb-4">
-          {selectedPole ? (
-            <>
-              <Text className="text-base font-semibold">{selectedPole.name}</Text>
-              <Text className="text-sm text-gray-500">
-                Lat: {selectedPole.coords[0]} Long: {selectedPole.coords[1]}
-              </Text>
-            </>
-          ) : (
-            <Text className="text-base text-gray-500">Select a pole on the map to view details.</Text>
-          )}
-        </View>
 
+        {selectedPole ? (
+          <>
+            <Text className="text-base font-semibold">{selectedPole.name}</Text>
+            <Text className="text-sm text-gray-500">
+              Lat: {selectedPole.coords[0]} | Long: {selectedPole.coords[1]}
+            </Text>
+          </>
+        ) : (
+          <Text className="text-gray-500 mb-2">Pilih titik CCTV dari peta.</Text>
+        )}
 
+        {/* VIDEO PLAYER */}
+        {currentStreamUrl ? (
+          <View
+            className="w-full bg-black items-center justify-center rounded-lg overflow-hidden mt-4"
+            style={{ height: width * (9 / 16) }}
+          >
+            <VideoView
+              player={player}
+              allowsFullscreen
+              allowsPictureInPicture
+              style={{ width: '100%', height: '100%' }}
+            />
+          </View>
+        ) : (
+          <View
+            className="w-full bg-black items-center justify-center rounded-lg mt-4"
+            style={{ height: width * (9 / 16) }}
+          >
+            <Text className="text-white">Tidak ada stream dipilih.</Text>
+          </View>
+        )}
 
-        
-        
-           {selectedPole?.streamUrl ? (
-            <View
-              className="w-full bg-black items-center justify-center rounded-lg overflow-hidden"
-              style={{ height: width * (9 / 16) }}
-            >
-              <VideoView
-                player={player}
-                className="flex-1 w-full"
-                allowsFullscreen
-                allowsPictureInPicture
-                style={{ width: '100%', height: '100%' }}
-              />
-            </View>
-          ) : (
-            <View
-              className="w-full bg-black rounded-lg items-center justify-center"
-              style={{ height: width * (9 / 16) }}
-            >
-              <Text className="text-white">Pilih CCTV dari peta.</Text>
-            </View>
-          )}
-          
-
-          
-        
       </View>
     </SafeAreaView>
   );
